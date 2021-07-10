@@ -1,54 +1,31 @@
 const client = require('../db/connection');
 const users = require('./users');
-const {nanoid} = require('nanoid');
 
 const userRegister = async (request, h) => {
+    const response = h.response();
     const {
         email,
         phoneNumber,
         password,
     } = request.payload;
-    const idUser = nanoid(8);
-    const checkEmail = users.find((user) => user.email === email);
+
     const newUser = {
-        idUser,
         email,
         phoneNumber,
         password,
     };
 
-    if (email && phoneNumber && password && !checkEmail) {
+    const checkEmail = await client.query(`select * from users where email = $1`, [`${email}`]);
+    console.log(checkEmail.rows.length);
+
+
+    if (email && phoneNumber && password && checkEmail.rows.length === 0) {
        users.push(newUser);
-       userAdded = await client.query(`insert into users(id,email,phone_number,password) 
-       values($1, $2, $3, $4) RETURNING *`, [`${idUser}`, `${email}`, `${phoneNumber}`, `${password}`]);
-    }
-
-    const isSuccess = users.filter((user) => user.idUser === idUser).length > 0;
-
-    if (isSuccess) {
-        const response = h.response();
+       await client.query(`insert into users(email,phone_number,password) 
+       values($1, $2, $3) RETURNING *`, [`${email}`, `${phoneNumber}`, `${password}`]);
         return response.code(200);
-    } else if (!email || !password || !phoneNumber) {
-        const response = h.response({
-            status: 'failed',
-            message: 'fill every form',
-        });
-        response.code(400);
-        return response;
-    } else if (checkEmail) {
-        const response = h.response({
-            status: 'failed',
-            message: 'email already exist',
-        });
-        response.code(400);
-        return response;
     }
-    const response = h.response({
-            status: 'failed',
-            message: 'create user failed',
-        });
-        response.code(400);
-        return response;
+    return response.code(400);
 };
 
 const getAllUser = async (request, h) => {

@@ -1,5 +1,4 @@
-
-const {addNewProduct, getAllProduct} = require('./handler');
+const {addNewProduct, getAllProduct} = require('./productHandler');
 const {userRegister, getUserByUsername, getAllUser, userLogin} = require('./usersHandler');
 
 const routes = [
@@ -32,7 +31,7 @@ const routes = [
     },
     {
         method: 'GET',
-        path: '/product',
+        path: '/product/{idUser}',
         handler: getAllProduct,
     },
 ];
