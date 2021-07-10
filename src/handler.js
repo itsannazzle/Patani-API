@@ -1,6 +1,7 @@
 const {nanoid} = require('nanoid');
 const products = require('./products');
 const users = require('./users');
+const client = require('../db/connection');
     //  users handler
 const addNewUser = (request, h) => {
     const {
@@ -62,16 +63,41 @@ const getAllUser = () => ({
     },
 });
 
-const getUserById = (request, h) => {
+const getAllUserFromDb = async (request, h) => {
+    try {
+        const result = await client.query(`select * from users`);
+    const userResult = result.rows;
+    const response = h.response({
+        status: 'success',
+        users: {
+             userResult,
+        },
+    });
+    response.code(200);
+    userResult.rows;
+    return response;
+    } catch (error) {
+        const response = h.response({
+            status: 'failed',
+            message: 'failed get users',
+        });
+        response.code(500);
+        console.log(error);
+    return response;
+    }
+};
+
+const getUserById = async (request, h) => {
     const {email} = request.params;
 
+    const result = await client.query(`select * from users where email = $1`, [email]);
     const findUser = users.find((user) => user.email === email);
 
     if (findUser) {
         const response = h.response({
             status: 'success',
             users: {
-                user: findUser,
+                user: result.rows,
             },
         });
         response.code(200);
@@ -177,4 +203,4 @@ const getProductById = (request, h) => {
 
 module.exports = {addNewUser, userLogin, addNewProduct,
                 getAllProduct, getAllUser, getUserById,
-                getProductById};
+                getProductById, getAllUserFromDb};

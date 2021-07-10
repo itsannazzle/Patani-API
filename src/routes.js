@@ -1,24 +1,24 @@
-const {addNewUserToDb} = require('../db/app');
-const {userLogin, addNewProduct, getAllProduct, getAllUser, getUserById} = require('./handler');
+
+const {addNewProduct, getAllProduct} = require('./handler');
+const {userRegister, getUserByUsername, getAllUser, userLogin} = require('./usersHandler');
 
 const routes = [
     //  endpoint user
     {
         method: 'POST',
         path: '/user/register',
-        handler: addNewUserToDb,
+        handler: userRegister,
     },
     {
         method: 'GET',
         path: '/user/{email}',
-        handler: getUserById,
+        handler: getUserByUsername,
     },
     {
         method: 'GET',
         path: '/user',
         handler: getAllUser,
     },
-    // user login
     {
         method: 'POST',
         path: '/user/login',
