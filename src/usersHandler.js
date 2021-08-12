@@ -50,9 +50,7 @@ const getAllUser = async (request, h) => {
 
 const getUserByUsername = async (request, h) => {
     const {email} = request.params;
-
     const result = await client.query(`select * from users where email = $1`, [`${email}`]);
-    // const findUser = users.find((user) => user.email === email);
     console.log(result.rows);
     if (result.rows.length === 1) {
         const response = h.response({
@@ -75,9 +73,7 @@ const userLogin = async (request, h) => {
         [`${email}`, `${password}`]);
 
     if (result.rows.length == 1) {
-        const response = h.response({
-            user: result.rows,
-        });
+        const response = h.response(result.rows[0]);
         response.code(200);
         return response;
     }
