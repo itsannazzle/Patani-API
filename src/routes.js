@@ -1,3 +1,4 @@
+const {addToCart, getUserCart} = require('./cartHhandler');
 const {addNewProduct, getAllProduct} = require('./productHandler');
 const {userRegister, getUserByUsername, getAllUser, userLogin} = require('./usersHandler');
 
@@ -33,6 +34,17 @@ const routes = [
         method: 'GET',
         path: '/product/{idUser}',
         handler: getAllProduct,
+    },
+    // endpoint keranjang
+    {
+        method: 'POST',
+        path: '/cart',
+        handler: addToCart,
+    },
+    {
+        method: 'GET',
+        path: '/cart/{idUser}',
+        handler: getUserCart,
     },
 ];
 
